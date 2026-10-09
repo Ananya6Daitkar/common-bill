@@ -1,0 +1,59 @@
+{
+  "at": "2026-10-07T11:32:49.455Z",
+  "elapsedSeconds": 201,
+  "status": "passed",
+  "scope": "Live API integration using fictional operational assumptions. Not user validation or a preference study.",
+  "comparison": "Same model and input fingerprints verified; agreement or disagreement is not proof of superiority.",
+  "records": [
+    {
+      "scenario": "initial",
+      "selected": "Columbus × Invisible Cities",
+      "cost": 170,
+      "host": "bookshop",
+      "qlooQueries": 4,
+      "llmUsed": true,
+      "model": "openai/gpt-oss-120b",
+      "allChecksPass": true
+    },
+    {
+      "scenario": "staff",
+      "selected": "Paterson × Invisible Cities",
+      "cost": 225,
+      "host": "cinema",
+      "qlooQueries": 4,
+      "llmUsed": true,
+      "model": "openai/gpt-oss-120b",
+      "allChecksPass": true
+    },
+    {
+      "scenario": "reject",
+      "selected": "Paterson × Invisible Cities",
+      "cost": 180,
+      "host": "bookshop",
+      "qlooQueries": 4,
+      "llmUsed": true,
+      "model": "openai/gpt-oss-120b",
+      "allChecksPass": true
+    },
+    {
+      "scenario": "budget",
+      "selected": "No proposal satisfies both briefs.",
+      "cost": null,
+      "host": null,
+      "qlooQueries": 0,
+      "llmUsed": false,
+      "model": null,
+      "allChecksPass": null
+    },
+    {
+      "scenario": "baseline",
+      "selected": "The agent found no convincing editorial proposal.",
+      "cost": null,
+      "host": null,
+      "qlooQueries": 0,
+      "llmUsed": true,
+      "model": "openai/gpt-oss-120b",
+      "allChecksPass": null
+    }
+  ]
+}
