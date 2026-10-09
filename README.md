@@ -6,19 +6,21 @@ Common Bill is a planning workbench for an independent cinema and a bookshop. It
 
 ## Current status
 
-Working local pilot; not a completed or impact-validated hackathon submission.
+Public hackathon pilot with real Qloo + Groq integration. Customer impact is not yet validated.
+
+**[Public source](https://github.com/Ananya6Daitkar/common-bill)** · **[Try the public demo](https://common-bill.ananyadn678.chatgpt.site)** · [Three-minute judge guide](docs/judge-guide.md) · [Submission description](docs/submission.md)
 
 - Editable partner briefs and film/book catalogs.
 - Budget, runtime, stock, availability, staffing, and rejection checks.
 - Clearly labeled, zero-vendor-call feasibility rehearsal.
 - Server-side Qloo search, candidate-constrained Insights, explainability receipts.
 - **Live Qloo search and two-direction affinity contract verified on 6 October 2026.** This is integration evidence, not proof of customer impact.
-- Optional structured-output LLM planning adapters. Anthropic is the selected provider; live LLM verification still requires credentials.
+- Structured-output planning through Groq GPT-OSS 120B; live responses verified.
 - Local partner-review notes, feedback-driven revision, before/after differences, and Markdown/JSON exports.
-- Blind LLM-vs-Qloo comparison implementation; not yet live-verified.
+- LLM-vs-Qloo comparison with verified matching model IDs and input fingerprints.
 - Responsive UI with keyboard-operable dialogs and tabs, reduced-motion support.
 
-No public deployment or public repository URL has been verified yet. No user-study results, attendance uplift, or revenue improvement are claimed.
+The public demo runs fixed live scenarios without credentials. Editable arbitrary live requests remain protected. No user-study results, attendance uplift, or revenue improvement are claimed.
 
 ## Run locally
 
@@ -45,12 +47,14 @@ LLM_MODEL=openai/gpt-oss-120b
 COMMON_BILL_ACCESS_TOKEN=your-long-random-workspace-token
 ```
 
-Use a model supported by your account and the provider's structured-output API. OpenAI and Gemini adapters are also available but have not been live-tested. All secrets remain server-side. The workspace access token is entered in Connections and kept in tab memory only.
+Use a model supported by your account and the provider's structured-output API. Anthropic, OpenAI and Gemini adapters are also available but have not been live-tested. All secrets remain server-side. The workspace access token is entered in Connections and kept in tab memory only.
 
 Restart the server after changes. In the catalog, resolve each exact work through Qloo and independently verify operational facts. The bundled businesses, stock, availability, permissions and costs are **fictional rehearsal inputs**; real titles do not make those facts true.
 
 ```sh
 npm run check:qloo
+# Optional full live suite; uses API quota and spaces runs for Groq limits.
+node --env-file=.env.local --import tsx scripts/check-live.ts
 ```
 
 This opt-in command makes five read-only Qloo requests: three exact-work searches and two directional affinity requests. It prints results, never the API key. It stops if identity resolution is ambiguous. It is not run in CI.
@@ -92,7 +96,7 @@ This version is a **single-device planning pilot**, not an authenticated multi-u
 
 Live mode sends entity IDs to Qloo. The LLM receives the brief, catalog facts, feedback, and evidence needed to plan. API terms and retention policies apply. No vendor payloads are committed to this repository.
 
-Public deployment must configure `COMMON_BILL_ACCESS_TOKEN`; paid routes fail closed without it. The process-local request guard is not a distributed abuse-control system. Add proper accounts, tenant isolation, persistent storage and distributed limits before a multi-customer launch.
+Arbitrary live planning/search routes require `COMMON_BILL_ACCESS_TOKEN` in production and fail closed without it. The separate opt-in public demo accepts only fixed scenarios and caches successful results for one hour; it never accepts user prompts or arbitrary entity IDs. The process-local request guard is not a distributed abuse-control system. Add proper accounts, tenant isolation, persistent storage and distributed limits before a multi-customer launch.
 
 ## Deployment
 
@@ -101,3 +105,7 @@ See [deployment instructions](docs/deployment.md). This is a standard Node.js Ne
 ## License
 
 Source code is MIT licensed. Qloo data and third-party creative works remain subject to their own rights and terms.
+
+## Hosted source
+
+The `codex/sites-hosting` branch contains the full Vinext/Cloudflare wrapper used by Sites. The default branch is the portable Next.js application. App, component, and library source is shared; the hosting branch adds the runtime build integration.

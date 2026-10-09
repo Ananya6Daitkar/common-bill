@@ -36,7 +36,11 @@ export async function createPlan(
   const signal = AbortSignal.timeout(140000);
   const steps: Step[] = [];
   const receipts: QueryReceipt[] = [];
-  const warnings: string[] = options.illustrative ? ["Live API demonstration with fictional businesses, costs, rights, availability and stock. This is not an approved real event or validated customer impact."] : [];
+  const warnings: string[] = options.illustrative
+    ? [
+        "Live API demonstration with fictional businesses, costs, rights, availability and stock. This is not an approved real event or validated customer impact.",
+      ]
+    : [];
   const step = (kind: Step["kind"], title: string, detail: string) =>
     steps.push({
       id: randomUUID(),

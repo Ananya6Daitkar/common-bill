@@ -113,7 +113,9 @@ function download(name: string, content: string, type = "text/plain") {
   const a = document.createElement("a");
   a.href = url;
   a.download = name;
+  document.body.appendChild(a);
   a.click();
+  a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 export function Workbench() {
@@ -135,6 +137,7 @@ export function Workbench() {
       | "evidence"
       | "review"
       | "help"
+      | "export"
       | "history"
       | null
     >(null);
@@ -154,6 +157,7 @@ export function Workbench() {
   const [vote, setVote] = useState<string | null>(null),
     [searchResults, setSearchResults] = useState<SearchResult[]>([]),
     [searching, setSearching] = useState(false);
+  const [exportContent, setExportContent] = useState("");
   const [demoMode, setDemoMode] = useState(false);
   const [demoScenario, setDemoScenario] = useState<
     "initial" | "staff" | "budget" | "reject"
@@ -501,7 +505,8 @@ export function Workbench() {
       `## Evidence\n${plan.receipts.map((r) => `${r.id}: ${r.endpoint}, ${r.at}, ${r.resultCount} results`).join("\n") || "No Qloo evidence in this run."}`,
       `## Limits\n${plan.warnings.join("\n")}\nLocal review states are not authenticated approvals or legal agreements.`,
     ].join("\n\n");
-    download("common-bill-event-brief.md", text, "text/markdown");
+    setExportContent(text);
+    setModal("export");
   }
   return (
     <div className="app-shell">
@@ -1928,6 +1933,47 @@ export function Workbench() {
               <Button onClick={reject} disabled={busy || !feedback.trim()}>
                 <RefreshCw size={16} /> Reject pairing and revise
               </Button>
+            </>
+          )}
+          {modal === "export" && (
+            <>
+              <div className="eyebrow">TAKE THE PLAN WITH YOU</div>
+              <DialogTitle>Your event brief.</DialogTitle>
+              <DialogDescription>
+                Review the draft before sharing. Illustrative inputs and
+                evidence limits are included in the export.
+              </DialogDescription>
+              <Field label="Event brief text">
+                <textarea readOnly rows={16} value={exportContent} />
+              </Field>
+              <div className="dialog-actions">
+                <Button
+                  variant="outline"
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(exportContent);
+                      setNotice("Event brief copied.");
+                    } catch {
+                      setError(
+                        "Select the brief text and copy it manually; clipboard access is unavailable.",
+                      );
+                    }
+                  }}
+                >
+                  Copy brief
+                </Button>
+                <Button
+                  onClick={() =>
+                    download(
+                      "common-bill-event-brief.md",
+                      exportContent,
+                      "text/markdown",
+                    )
+                  }
+                >
+                  Download Markdown
+                </Button>
+              </div>
             </>
           )}
           {modal === "history" && (
