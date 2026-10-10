@@ -11,6 +11,7 @@ test("Groq uses strict structured output and rejects malformed decisions", async
   let malformed = false;
   globalThis.fetch = async (url, options) => {
     assert.equal(url, "https://api.groq.com/openai/v1/chat/completions");
+    assert.equal(options?.redirect, "manual");
     const body = JSON.parse(String(options?.body));
     assert.equal(body.response_format.json_schema.strict, true);
     assert.equal(body.messages[1].role, "user");

@@ -120,7 +120,8 @@ export async function askPlanner(
         ? AbortSignal.any([signal, AbortSignal.timeout(45000)])
         : AbortSignal.timeout(45000),
       cache: "no-store",
-      redirect: "error",
+      // Workers supports manual redirects; non-2xx checks reject them without forwarding credentials.
+      redirect: "manual",
     };
     response = await fetch(url, options);
     const retrySeconds = Number(response.headers.get("retry-after"));

@@ -77,7 +77,8 @@ export async function qlooGet(
         ? AbortSignal.any([signal, AbortSignal.timeout(15000)])
         : AbortSignal.timeout(15000),
       cache: "no-store",
-      redirect: "error",
+      // Workers supports manual redirects; non-2xx checks reject them without forwarding credentials.
+      redirect: "manual",
     });
   } catch (error) {
     throw new ServiceError(
