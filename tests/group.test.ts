@@ -80,3 +80,5 @@ test("public requests reject duplicate identities and arbitrary seeds", () => {
     false,
   );
 });
+
+test("requesting another option excludes it without adding a veto",()=>{const next={...input,passed:["paterson" as const]};const rows=rankGroup(next,{p1:receipt(["a","b","c","d"]),p2:receipt(["a","b","c","d"])},ids);assert.equal(rows[0].id,"columbus");assert.deepEqual(next.participants[0].vetoes,[]);});

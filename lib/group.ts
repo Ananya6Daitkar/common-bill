@@ -63,6 +63,10 @@ export const groupSchema = z
       )
       .min(2)
       .max(4),
+    passed: z
+      .array(z.enum(["paterson", "columbus", "arrival", "paddington"]))
+      .max(4)
+      .optional(),
     maxMinutes: z.number().int().min(90).max(180),
     strategy: z.enum(["balanced", "average"]),
     mode: z.enum(["qloo", "baseline"]),
@@ -101,6 +105,8 @@ export function rankGroup(
 ): Row[] {
   const rows = movies.map((m) => {
     const blocked: string[] = [];
+    if (input.passed?.includes(m.id))
+      blocked.push("Group requested another option");
     if (m.minutes > input.maxMinutes) blocked.push("Exceeds time limit");
     const ranks: Record<string, number | null> = {};
     for (const p of input.participants) {

@@ -19,6 +19,7 @@ const results = new Map<
   { expires: number; promise: Promise<GroupResult> }
 >();
 let active = 0;
+let budgetWindow = { starts: Date.now(), count: 0 };
 async function resolve() {
   if (!ids)
     ids = (async () => {
@@ -68,6 +69,9 @@ export async function planGroup(input: GroupInput): Promise<GroupResult> {
       "Two groups are planning now. Please retry shortly.",
       429,
     );
+  if (Date.now() - budgetWindow.starts >= 60000) budgetWindow = { starts: Date.now(), count: 0 };
+  if (budgetWindow.count >= 12) throw new ServiceError("The public planning budget is busy. Retry in one minute; cached proposals remain available.", 429);
+  budgetWindow.count++;
   active++;
   const promise = (async () => {
     const receipts: Record<string, QueryReceipt> = {};
