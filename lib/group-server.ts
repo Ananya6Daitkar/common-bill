@@ -139,7 +139,9 @@ export async function planGroup(input: GroupInput): Promise<GroupResult> {
       selected: decision.selectedPairId || null,
       rows,
       receipts,
-      rationale: decision.rationale,
+      rationale: input.mode === "qloo" && decision.selectedPairId
+        ? `${allowed[0].title} leads the ${input.strategy === "balanced" ? "minimum-then-mean" : "mean"} within-profile ranking policy among ${eligible.length} feasible films with comparative evidence for every participant. Its lowest percentile is ${Math.round(allowed[0].floor! * 100)}/100 and its mean is ${Math.round(allowed[0].mean! * 100)}/100. These are ordinal ranks, not satisfaction scores. Every participant must still accept.`
+        : decision.rationale,
       model: process.env.LLM_MODEL || null,
     };
   })()
