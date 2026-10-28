@@ -1,3 +1,9 @@
+## Common Ground — group film-night negotiation
+
+The current group-planning pilot is live at [Common Ground](https://common-bill.ananyadn678.chatgpt.site/common-ground). Common Bill remains available at the root route.
+
+Common Ground includes separate taste profiles, real Qloo receipts, veto-safe planning, explicit agreement, a blind LLM comparison, and a decision lab that recomputes the policy while omitting each taste signal. See [workflow and limitations](docs/common-ground.md) and [competition review, demo script and judge Q&A](docs/competition-review.md). No measured customer impact is claimed.
+
 # Common Bill
 
 **Two businesses. One evening worth doing together.**

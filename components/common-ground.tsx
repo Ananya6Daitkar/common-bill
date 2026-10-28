@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   works,
   movies,
@@ -8,6 +8,7 @@ import {
   type GroupResult,
 } from "@/lib/group";
 import "./common-ground.css";
+import { DecisionLab } from "./decision-lab";
 const initial: GroupInput = {
   participants: [
     { id: "p1", seed: "cities", vetoes: [] },
@@ -33,6 +34,7 @@ export function CommonGround() {
     reason: string;
   } | null>(null);
   const [exportText, setExportText] = useState("");
+  const inFlight = useRef(false);
   function edit(next: GroupInput) {
     setInput(next);
     setPrevious(result || previous);
@@ -46,28 +48,34 @@ export function CommonGround() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(i),
+      signal: AbortSignal.timeout(175000),
     });
     const data = await r.json();
     if (!r.ok) throw Error(data.error || "Planning failed");
     return data as GroupResult;
   }
-  async function run() {
+  async function run(nextInput: GroupInput = input) {
+    if (inFlight.current) return;
+    inFlight.current = true;
     setBusy(true);
     setError("");
     setComparison(null);
     setExportText("");
     try {
-      const next = await request({ ...input, mode: "qloo" });
+      const next = await request({ ...nextInput, mode: "qloo" });
       setPrevious(result || previous);
       setResult(next);
       setVotes({});
     } catch (e) {
       setError(e instanceof Error ? e.message : "Planning failed");
     } finally {
+      inFlight.current = false;
       setBusy(false);
     }
   }
   async function compare() {
+    if (inFlight.current) return;
+    inFlight.current = true;
     setBusy(true);
     setError("");
     setComparison(null);
@@ -89,6 +97,7 @@ export function CommonGround() {
     } catch (e) {
       setError(e instanceof Error ? e.message : "Comparison failed");
     } finally {
+      inFlight.current = false;
       setBusy(false);
     }
   }
@@ -145,7 +154,7 @@ export function CommonGround() {
             <em>Common ground.</em>
           </h1>
           <p>
-            Find a film everyone will say yes to.
+            Find a film everyone can weigh in on.
             <br />
             Qloo finds the cultural connections. Your group makes the call.
           </p>
@@ -360,8 +369,19 @@ export function CommonGround() {
             </button>
           </div>
         </fieldset>
+        {Boolean(input.passed?.length) && (
+          <p className="cg-change">
+            {input.passed!.length} earlier option(s) set aside.{" "}
+            <button
+              disabled={busy}
+              onClick={() => edit({ ...input, passed: [] })}
+            >
+              Reconsider earlier options
+            </button>
+          </p>
+        )}
         <div className="cg-action">
-          <button className="cg-primary" disabled={busy} onClick={run}>
+          <button className="cg-primary" disabled={busy} onClick={() => run()}>
             {busy ? "Consulting the evidence…" : "Find our common ground →"}
           </button>
           <small>
@@ -408,7 +428,7 @@ export function CommonGround() {
                 )}
                 <p>{result.rationale}</p>
                 <small>
-                  Model interpretation; inspect the Qloo ranks below. Cultural
+                  Policy explanation; inspect the Qloo ranks below. Cultural
                   affinity is not a satisfaction forecast.
                 </small>
               </div>
@@ -453,12 +473,29 @@ export function CommonGround() {
               </div>
             )}
             {Object.values(votes).includes("another") && (
-              <p>
-                Someone wants another option. Add an explicit veto if this film
-                must be excluded, or revise their favorite and replan. The group
-                has not agreed.
-              </p>
+              <div className="cg-repair">
+                <p>
+                  A participant wants another option. Explore the next candidate
+                  without turning that request into a permanent veto.
+                </p>
+                <button
+                  disabled={busy}
+                  onClick={() => {
+                    const next = {
+                      ...input,
+                      passed: [
+                        ...new Set([...(input.passed || []), result.selected!]),
+                      ] as NonNullable<GroupInput["passed"]>,
+                    };
+                    edit(next);
+                    void run(next);
+                  }}
+                >
+                  Find another option →
+                </button>
+              </div>
             )}
+            <DecisionLab input={result.input} rows={result.rows} />
             <div className="cg-table">
               <table>
                 <caption>
