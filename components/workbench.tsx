@@ -37,6 +37,8 @@ import {
   Braces,
 } from "lucide-react";
 import { Button } from "./ui/button";
+import { DecisionEvidence } from "./decision-evidence";
+import { OperatorObservation } from "./operator-observation";
 import {
   Dialog,
   DialogContent,
@@ -518,10 +520,13 @@ export function Workbench() {
           </span>
         </a>
         <div className="topbar-center">
-          <span className="tiny-rule" /> THE COLLABORATION DESK{" "}
+          <span className="tiny-rule" /> THE NEIGHBOURHOOD CULTURE CLUB{" "}
           <span className="tiny-rule" />
         </div>
         <div className="topbar-actions">
+          <a className="bill-sibling" href="/common-ground">
+            Planning a movie night? ↗
+          </a>
           <Button
             variant="ghost"
             size="sm"
@@ -550,16 +555,33 @@ export function Workbench() {
         <div className="workspace-heading">
           <div>
             <div className="eyebrow">
-              CINEMA MEETS BOOKSHOP <span> / </span> WORKSPACE 001
+              CINEMA + BOOKSHOP <span> / </span> BETTER TOGETHER
             </div>
             <h1>
-              Make an evening of it<span className="orange">.</span>
+              One film. One book.
+              <br />
+              <em>A reason to come together.</em>
             </h1>
             <p>
-              Two catalogs. A shared idea. Something worth coming together for.
+              Plan a shared event for your cinema and bookshop. Qloo finds the
+              cultural connection. You check the budget, time, and people.
             </p>
           </div>
           <div className="heading-side">
+            <div className="bill-print" aria-hidden="true">
+              <span>A DOUBLE BILL</span>
+              <div className="bill-print-symbol">
+                <Film size={52} />
+                <i>×</i>
+                <BookOpen size={52} />
+              </div>
+              <strong>
+                Two doors.
+                <br />
+                One evening.
+              </strong>
+              <small>CULTURE IS BETTER SHARED</small>
+            </div>
             <span className="workspace-label">YOUR WORKING DRAFT</span>
             <span className="save-state">
               <Check size={14} />{" "}
@@ -572,11 +594,27 @@ export function Workbench() {
               size="sm"
               onClick={() => setModal("history")}
             >
-              <History size={15} /> Revision history{" "}
+              <History size={15} /> Earlier plans{" "}
               {versions.length > 0 && (
                 <span className="count">{versions.length}</span>
               )}
             </Button>
+          </div>
+        </div>
+        <div className="bill-process" aria-label="How Common Bill works">
+          <div>
+            <b>01</b>
+            <span>Bring your films & books</span>
+          </div>
+          <i>↗</i>
+          <div>
+            <b>02</b>
+            <span>Find a cultural connection</span>
+          </div>
+          <i>↗</i>
+          <div>
+            <b>03</b>
+            <span>Make a plan that works</span>
           </div>
         </div>
         <div className="rehearsal-strip">
@@ -587,7 +625,7 @@ export function Workbench() {
                 ? "Public live demonstration."
                 : mode === "rehearsal"
                   ? "Rehearsal workspace."
-                  : "Live cultural evaluation."}
+                  : "Using real Qloo results."}
             </strong>{" "}
             {demoMode
               ? "Real Qloo + Groq results. Fictional businesses, costs, stock, and screening permissions."
@@ -614,7 +652,7 @@ export function Workbench() {
               <p>
                 {demoMode
                   ? "Fixed scenarios keep the public demo available. Edits switch back to your workspace. Responses may be reused for one hour; receipts retain original timestamps."
-                  : "Start a real Qloo + Groq run with two films and two books. No account or API key needed. Operating assumptions are illustrative."}
+                  : "Start a real Qloo + Groq run with two films and two books. No account or API key needed. Costs and availability are examples."}
               </p>
             </div>
             <div className="demo-actions">
@@ -642,6 +680,38 @@ export function Workbench() {
             </div>
           </section>
         )}
+        {status?.publicDemo && (
+          <details className="judge-walkthrough">
+            <summary>First visit? Follow the three-minute product tour</summary>
+            <ol>
+              <li>
+                <strong>Generate.</strong> Click “Try the live demo” for real
+                Qloo and Groq results using illustrative operating facts.
+              </li>
+              <li>
+                <strong>Inspect.</strong> Read the cultural ranks and practical
+                checks, then open the Qloo receipts.
+              </li>
+              <li>
+                <strong>Challenge.</strong> Remove bookshop staffing or drop the
+                budget to £100. Watch the agent repair the plan or stop with
+                blockers.
+              </li>
+              <li>
+                <strong>Compare.</strong> Open “Compare results,” run both
+                methods, and lock your preference before revealing them.
+              </li>
+              <li>
+                <strong>Take it away.</strong> Export an event brief and an
+                evaluation record. Actual rights, stock and local demand still
+                require organizer confirmation.
+              </li>
+            </ol>
+            <button onClick={() => setTab("compare")}>
+              Open the evidence test →
+            </button>
+          </details>
+        )}
         {error && (
           <div className="error-banner" role="alert">
             <AlertTriangle size={18} />
@@ -662,7 +732,7 @@ export function Workbench() {
                 <span className="count">{catalog.length}</span>
               </Tabs.Trigger>
               <Tabs.Trigger value="compare">
-                <span>03</span> The evidence test
+                <span>03</span> Compare results
               </Tabs.Trigger>
             </Tabs.List>
             <span className="local-note">
@@ -712,7 +782,7 @@ export function Workbench() {
               </aside>
               <section className="proposal-column" aria-label="Event proposal">
                 <div className="section-topline">
-                  <span className="eyebrow">THE SHARED BILL</span>
+                  <span className="eyebrow">YOUR EVENT PLAN</span>
                   <span
                     className={cn("status-pill", both && !dirty && "approved")}
                   >
@@ -821,6 +891,7 @@ export function Workbench() {
                     brief. Regenerate before review or export.
                   </div>
                 )}
+                {plan && !dirty && <DecisionEvidence plan={plan} />}
                 {plan && !selected && (
                   <div className="inline-warning">
                     <AlertTriangle size={18} />
@@ -1410,6 +1481,7 @@ export function Workbench() {
                       )}
                       <Button
                         variant={vote === key ? "dark" : "outline"}
+                        disabled={comparison.revealed}
                         onClick={() => setVote(key)}
                       >
                         Prefer proposal {key.toUpperCase()}
@@ -1420,17 +1492,17 @@ export function Workbench() {
                 <div className="comparison-footer">
                   <Button
                     variant={vote === "tie" ? "dark" : "outline"}
+                    disabled={comparison.revealed}
                     onClick={() => setVote("tie")}
                   >
                     No preference
                   </Button>
                   <Button
-                    variant="outline"
-                    onClick={() =>
-                      setComparison((c) => (c ? { ...c, revealed: true } : c))
-                    }
+                    variant={vote === "neither" ? "dark" : "outline"}
+                    disabled={comparison.revealed}
+                    onClick={() => setVote("neither")}
                   >
-                    Reveal the methods
+                    Neither is usable
                   </Button>
                   <Button
                     variant="ghost"
@@ -1455,6 +1527,22 @@ export function Workbench() {
                     <Download size={15} /> Export comparison
                   </Button>
                 </div>
+                <OperatorObservation
+                  key={`${comparison.a.id}:${comparison.b.id}`}
+                  a={comparison.a}
+                  b={comparison.b}
+                  vote={vote}
+                  onReveal={() =>
+                    setComparison((c) => (c ? { ...c, revealed: true } : c))
+                  }
+                />
+                {comparison.revealed && (
+                  <p className="small-disclosure">
+                    {comparison.a.selected?.id === comparison.b.selected?.id
+                      ? "Both methods selected the same pairing. This run does not demonstrate a change in selection from adding Qloo."
+                      : "The methods selected different outcomes. A difference alone does not establish that either is better."}
+                  </p>
+                )}
                 <p className="small-disclosure">
                   This is a local reviewer observation, not proof of attendance
                   or revenue improvement. Qloo affinity is not the evaluation
