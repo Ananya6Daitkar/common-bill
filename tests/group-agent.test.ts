@@ -1,0 +1,12 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {runGroupAgent} from '../lib/group-agent';
+import {rankGroup,type GroupInput,type Row} from '../lib/group';
+const input:GroupInput={participants:[{id:'p1',seed:'cities',vetoes:[]},{id:'p2',seed:'arrival',vetoes:[]}],maxMinutes:125,strategy:'balanced',mode:'qloo'};
+const initial=()=>rankGroup(input,{},{});
+const supported=()=>initial().map(r=>({...r,floor:.5,mean:.7,ranks:{p1:.5,p2:.9}})) as Row[];
+test('agent queries evidence before proposing a validated film',async()=>{let calls=0,queries=0;const result=await runGroupAgent(input,initial(),{decide:async()=>({selectedPairId:++calls===1?'query_evidence':'propose:arrival',rationale:'Fits the group'}),query:async()=>{queries++;return {rows:supported(),receipts:{}}}});assert.equal(result.selected,'arrival');assert.equal(queries,1);assert.equal(result.agentCalls,2);});
+test('agent cannot propose before evidence',async()=>{await assert.rejects(runGroupAgent(input,initial(),{decide:async()=>({selectedPairId:'propose:arrival',rationale:''}),query:async()=>({rows:supported(),receipts:{}})}),/validated tool menu/);});
+test('agent can ask an unsure participant without calling Qloo',async()=>{const result=await runGroupAgent({...input,uncertainParticipant:'p1'},initial(),{decide:async()=>({selectedPairId:'clarify:p1',rationale:'Ask for a representative favorite'}),query:async()=>{throw Error('must not query')}});assert.equal(result.clarification?.participantId,'p1');assert.equal(result.selected,null);});
+test('agent never proposes blocked films',async()=>{let calls=0;await assert.rejects(runGroupAgent(input,initial(),{decide:async()=>({selectedPairId:++calls===1?'query_evidence':'propose:arrival',rationale:''}),query:async()=>({rows:supported().map(r=>r.id==='arrival'?{...r,blocked:['p1 veto']}:r),receipts:{}})}),/validated tool menu/);});
+test('impossible constraints make no model or Qloo call',async()=>{const result=await runGroupAgent(input,initial().map(r=>({...r,blocked:['time']})),{decide:async()=>{throw Error('must not call')},query:async()=>{throw Error('must not query')}});assert.equal(result.agentCalls,0);assert.equal(result.selected,null);});

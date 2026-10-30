@@ -7,6 +7,7 @@ import {
   type GroupResult,
 } from "./group";
 import { searchEntities, getAffinity, ServiceError } from "./qloo";
+import { runGroupAgent } from "./group-agent";
 import { askPlanner } from "./llm";
 import type { QueryReceipt } from "./types";
 let ids: Promise<Record<string, string>> | undefined;
@@ -69,8 +70,13 @@ export async function planGroup(input: GroupInput): Promise<GroupResult> {
       "Two groups are planning now. Please retry shortly.",
       429,
     );
-  if (Date.now() - budgetWindow.starts >= 60000) budgetWindow = { starts: Date.now(), count: 0 };
-  if (budgetWindow.count >= 12) throw new ServiceError("The public planning budget is busy. Retry in one minute; cached proposals remain available.", 429);
+  if (Date.now() - budgetWindow.starts >= 60000)
+    budgetWindow = { starts: Date.now(), count: 0 };
+  if (budgetWindow.count >= 12)
+    throw new ServiceError(
+      "The public planning budget is busy. Retry in one minute; cached proposals remain available.",
+      429,
+    );
   budgetWindow.count++;
   active++;
   const promise = (async () => {
@@ -91,10 +97,23 @@ export async function planGroup(input: GroupInput): Promise<GroupResult> {
         model: null,
       };
     if (input.mode === "qloo") {
-      const identities = await resolve();
-      for (const p of input.participants)
-        receipts[p.id] = await profile(p.seed, identities);
-      rows = rankGroup(input, receipts, identities);
+      const deadline = AbortSignal.timeout(140000);
+      const agent = await runGroupAgent(input, rows, {
+        decide: (context) => askPlanner(context, deadline, "agent"),
+        query: async () => {
+          const identities = await resolve();
+          for (const p of input.participants)
+            receipts[p.id] = await profile(p.seed, identities);
+          return { rows: rankGroup(input, receipts, identities), receipts };
+        },
+      });
+      return {
+        id: randomUUID(),
+        at: new Date().toISOString(),
+        input,
+        ...agent,
+        model: agent.agentCalls ? process.env.LLM_MODEL || null : null,
+      };
     }
     const eligible = rows.filter(
       (r) =>
@@ -112,7 +131,7 @@ export async function planGroup(input: GroupInput): Promise<GroupResult> {
           "No feasible film has comparative Qloo evidence for every participant. Missing evidence is unknown, not dislike.",
         model: null,
       };
-    const allowed = input.mode === "qloo" ? [eligible[0]] : eligible;
+    const allowed = eligible;
     const decision = await askPlanner(
       {
         mode: input.mode,
@@ -143,9 +162,7 @@ export async function planGroup(input: GroupInput): Promise<GroupResult> {
       selected: decision.selectedPairId || null,
       rows,
       receipts,
-      rationale: input.mode === "qloo" && decision.selectedPairId
-        ? `${allowed[0].title} leads the ${input.strategy === "balanced" ? "minimum-then-mean" : "mean"} within-profile ranking policy among ${eligible.length} feasible films with comparative evidence for every participant. Its lowest percentile is ${Math.round(allowed[0].floor! * 100)}/100 and its mean is ${Math.round(allowed[0].mean! * 100)}/100. These are ordinal ranks, not satisfaction scores. Every participant must still accept.`
-        : decision.rationale,
+      rationale: decision.rationale,
       model: process.env.LLM_MODEL || null,
     };
   })()

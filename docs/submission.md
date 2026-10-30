@@ -1,7 +1,7 @@
 # Common Bill — Devpost submission copy
 
 ## Tagline
-Two businesses. One evening worth doing together.
+One film. One book. A reason to come together.
 
 ## What it does
 Common Bill helps an independent cinema and a bookshop plan a shared film-and-book evening. It combines cultural evidence with the unglamorous constraints that determine whether an event can actually happen: budget, screening length, stock, availability, and a discussion host.
@@ -25,8 +25,13 @@ The public demonstration uses real Qloo and Groq calls over a fixed catalog. The
 - Rate limits: compact model context, bounded retry, fixed demo scenarios, and result reuse.
 - Honest comparison: identical inputs/model, randomized display order, and a valid “no preference” outcome.
 
+## Latest product experience
+The redesigned interface opens with a clear cinema-and-bookshop use case, a three-step introduction, plain-language controls, and a distinct printed-programme visual identity. Evidence is available for inspection without obscuring the main planning task. The comparison can record a reviewer’s role, explanation and willingness to try the proposal before revealing the methods. These are local self-reports, not verified operator endorsements.
+
+The companion Common Ground page demonstrates group-film negotiation with a bounded tool-using agent, targeted clarification, Qloo receipts, veto protection, explicit acceptance and policy sensitivity. Common Bill remains the primary submission.
+
 ## What we demonstrated
-A live integration check exercises initial planning, staffing repair, rejected-pair exclusion, an infeasible budget, and an LLM-only comparison. The repository contains the dated verification summary. These are engineering checks using illustrative operational assumptions, not a customer trial.
+As of October 30, 2026, 36 automated tests, TypeScript checking, and the hosted production build pass. Mobile layout was inspected; complete desktop interaction testing remains outstanding. A dated live integration check exercises initial planning, staffing repair, rejected-pair exclusion, an infeasible budget, and an LLM-only comparison. The repository contains the dated verification summary. These are engineering checks using illustrative operational assumptions, not a customer trial.
 
 ## Potential impact
 The intended audience is independent cinema programmers and booksellers coordinating a joint event. The value hypothesis is that a shared, evidence-backed draft reduces the effort of finding common programming ground while catching operational disagreements early. That hypothesis is testable through operator task completion, time-to-agreed-draft, and willingness to run a proposal.

@@ -2350,3 +2350,364 @@ h1 {
     gap: 12px;
   }
 }
+
+.judge-walkthrough,
+.decision-evidence,
+.operator-observation {
+  margin: 18px 0;
+  padding: 22px;
+  border: 1px solid #cfc9bb;
+  border-radius: 6px;
+  background: #faf8f1;
+}
+.judge-walkthrough summary,
+.decision-evidence summary,
+.operator-observation summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.judge-walkthrough ol {
+  padding-left: 22px;
+  line-height: 1.7;
+}
+.judge-walkthrough button {
+  margin-top: 10px;
+  text-decoration: underline;
+}
+.decision-evidence h3,
+.operator-observation h3 {
+  font-size: 20px;
+  margin: 10px 0 16px;
+}
+.evidence-columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+.evidence-columns p,
+.operator-observation p {
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 8px 0;
+}
+.decision-evidence small,
+.operator-observation small {
+  display: block;
+  color: #645f54;
+  line-height: 1.5;
+  font-size: 12px;
+  margin-top: 10px;
+}
+.decision-evidence details {
+  margin: 18px 0;
+}
+.evidence-table-scroll {
+  overflow-x: auto;
+}
+.decision-evidence table {
+  width: 100%;
+  font-size: 12px;
+  border-collapse: collapse;
+  margin: 12px 0;
+}
+.decision-evidence td,
+.decision-evidence th {
+  text-align: left;
+  padding: 10px;
+  border-bottom: 1px solid #ded8cd;
+}
+.decision-evidence caption {
+  text-align: left;
+  margin: 8px 0;
+  color: #645f54;
+}
+.observation-fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+.operator-observation label {
+  display: block;
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 14px 0;
+}
+.operator-observation select,
+.operator-observation textarea {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #bab4a7;
+  background: white;
+  border-radius: 4px;
+  margin-top: 6px;
+  font: inherit;
+}
+.operator-observation .observation-consent {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.operator-observation input[type="checkbox"] {
+  margin-top: 4px;
+}
+@media (max-width: 760px) {
+  .evidence-columns,
+  .observation-fields {
+    grid-template-columns: 1fr;
+  }
+  .decision-evidence,
+  .operator-observation,
+  .judge-walkthrough {
+    padding: 16px;
+  }
+}
+/* Common Bill: neighbourhood culture programme. Scoped to preserve Common Ground. */
+.app-shell {
+  --paper: #faf6ed;
+  --surface: #fffdf8;
+  --ink: #292421;
+  --muted: #6c6257;
+  --line: #d7cfc2;
+  --orange: #b53229;
+  --orange-dark: #92271f;
+  --green: #354d41;
+  background: var(--paper);
+}
+.app-shell .topbar {
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+  padding-top: 22px;
+  padding-bottom: 22px;
+}
+.app-shell .brand-mark {
+  border-radius: 50%;
+}
+.app-shell .topbar-center {
+  font-size: 9px;
+  letter-spacing: 1.6px;
+}
+.bill-sibling {
+  font-size: 12px;
+  color: #a12d25;
+}
+.app-shell .main-wrap {
+  padding-top: 48px;
+}
+.app-shell .workspace-heading {
+  align-items: center;
+  margin-bottom: 35px;
+  gap: 45px;
+}
+.app-shell .workspace-heading h1 {
+  font:
+    700 clamp(40px, 4.6vw, 70px)/1.05 Arial,
+    sans-serif;
+  letter-spacing: -3px;
+  max-width: 800px;
+  margin: 20px 0;
+}
+.app-shell .workspace-heading h1 em {
+  font-family: Georgia, serif;
+  font-weight: 400;
+  color: #b53229;
+}
+.app-shell .workspace-heading p {
+  font-size: 17px;
+  max-width: 610px;
+  line-height: 1.7;
+}
+.app-shell .heading-side {
+  min-width: 260px;
+}
+.bill-print {
+  width: 250px;
+  background: #b53229;
+  color: #fff0d8;
+  padding: 25px;
+  transform: rotate(3deg);
+  box-shadow: 8px 9px 0 #e8ddcc;
+  text-align: center;
+  margin: 0 12px 24px;
+}
+.bill-print > span,
+.bill-print small {
+  font-size: 9px;
+  letter-spacing: 2px;
+  display: block;
+}
+.bill-print-symbol {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 17px;
+  padding: 23px 0;
+}
+.bill-print-symbol i {
+  font:
+    italic 33px Georgia,
+    serif;
+}
+.bill-print strong {
+  font:
+    italic 32px/1.05 Georgia,
+    serif;
+  display: block;
+  margin-bottom: 20px;
+}
+.bill-process {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 24px 0;
+  margin-bottom: 28px;
+  border-block: 1px solid var(--line);
+}
+.bill-process > div {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 13px;
+}
+.bill-process b {
+  font:
+    italic 29px Georgia,
+    serif;
+  color: #a12d25;
+}
+.bill-process > i {
+  color: #b53229;
+}
+.app-shell .rehearsal-strip {
+  border-radius: 0;
+  background: #f0e9de;
+  font-size: 12px;
+}
+.app-shell .live-demo-bar {
+  border: 1px solid #b53229;
+  border-left: 5px solid #b53229;
+  background: #fffdf8;
+  border-radius: 0;
+  padding: 25px;
+}
+.app-shell .live-demo-bar strong {
+  font:
+    26px Georgia,
+    serif;
+}
+.app-shell .live-demo-bar p {
+  max-width: 650px;
+  line-height: 1.6;
+}
+.app-shell .button:not(.button-ghost) {
+  border-radius: 24px;
+}
+.app-shell .navigation-row {
+  margin-top: 32px;
+}
+.app-shell .tab-list {
+  background: transparent;
+  gap: 5px;
+}
+.app-shell .tab-list [role="tab"] {
+  border-radius: 0;
+  padding: 17px 20px;
+  border-bottom: 3px solid transparent;
+}
+.app-shell .tab-list [data-state="active"] {
+  background: #f0e9de;
+  color: #a12d25;
+  border-bottom-color: #b53229;
+  box-shadow: none;
+}
+.app-shell .event-poster,
+.app-shell .empty-poster {
+  border-radius: 0;
+  box-shadow: 7px 8px 0 #e7dece;
+}
+.app-shell .generate-button {
+  border-radius: 30px;
+  background: #b53229;
+}
+.app-shell .judge-walkthrough {
+  background: transparent;
+  border: 1px solid var(--line);
+  padding: 16px 22px;
+}
+.app-shell summary {
+  cursor: pointer;
+}
+.app-shell .judge-walkthrough li {
+  line-height: 1.65;
+  margin: 8px 0;
+}
+.app-shell .field input,
+.app-shell .field select {
+  min-height: 44px;
+}
+.app-shell :focus-visible {
+  outline-color: #b53229;
+}
+@media (max-width: 1000px) {
+  .app-shell .topbar-center {
+    display: none;
+  }
+  .bill-sibling {
+    display: none;
+  }
+  .app-shell .workspace-heading h1 {
+    font-size: 44px;
+  }
+  .bill-print {
+    width: 220px;
+  }
+  .app-shell .heading-side {
+    min-width: 220px;
+  }
+}
+@media (max-width: 700px) {
+  .app-shell .workspace-heading {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 25px;
+  }
+  .app-shell .workspace-heading h1 {
+    font-size: 43px;
+    letter-spacing: -2px;
+  }
+  .app-shell .heading-side {
+    align-items: flex-start;
+  }
+  .bill-print {
+    align-self: center;
+    width: 240px;
+    margin-bottom: 20px;
+  }
+  .bill-process {
+    flex-direction: column;
+    gap: 14px;
+  }
+  .bill-process > i {
+    display: none;
+  }
+  .bill-process > div {
+    font-size: 14px;
+  }
+  .app-shell .topbar-actions {
+    gap: 5px;
+  }
+  .app-shell .connection-button {
+    font-size: 11px;
+    padding: 8px;
+  }
+  .app-shell .live-demo-bar {
+    padding: 20px;
+  }
+  .app-shell .tab-list [role="tab"] {
+    padding: 12px 9px;
+    font-size: 12px;
+  }
+  .app-shell .workspace-heading p {
+    font-size: 16px;
+  }
+}

@@ -1,14 +1,16 @@
-## Common Ground — group film-night negotiation
-
-The current group-planning pilot is live at [Common Ground](https://common-bill.ananyadn678.chatgpt.site/common-ground). Common Bill remains available at the root route.
-
-Common Ground includes separate taste profiles, real Qloo receipts, veto-safe planning, explicit agreement, a blind LLM comparison, and a decision lab that recomputes the policy while omitting each taste signal. See [workflow and limitations](docs/common-ground.md) and [competition review, demo script and judge Q&A](docs/competition-review.md). No measured customer impact is claimed.
-
 # Common Bill
 
-**Two businesses. One evening worth doing together.**
+**One film. One book. A reason to come together.**
 
 Common Bill is a planning workbench for an independent cinema and a bookshop. It evaluates film–book combinations against both partners' operational requirements, optionally grounds selection in real Qloo cross-domain affinity, and repairs proposals after feedback.
+
+## October 30 release
+
+The public entry is **Common Bill**, at the root URL. Its redesigned film-and-book workbench uses clearer language, a three-step introduction, responsive layouts, and expandable evidence. [Watch/record the current 90-second demo](docs/demo-video-script.md).
+
+[Common Ground](https://common-bill.ananyadn678.chatgpt.site/common-ground) is a companion group-film pilot: a bounded Groq agent can query Qloo, ask a participant to clarify a favorite, or propose a feasible film. It displays recorded tool actions, preserves vetoes, and requires explicit group acceptance. Its six taste starters and four film candidates are a deliberately limited catalog. It is not the primary Common Bill submission.
+
+Verification: **36 automated tests**, TypeScript checking, and the hosted production build passed on October 30, 2026. Mobile layout was inspected; complete desktop interaction testing remains outstanding. Tests establish behavior, not customer impact.
 
 ## Current status
 

@@ -34,6 +34,9 @@ export function CommonGround() {
     reason: string;
   } | null>(null);
   const [exportText, setExportText] = useState("");
+  const [stage, setStage] = useState<"people" | "proposal" | "comparison">(
+    "people",
+  );
   const inFlight = useRef(false);
   function edit(next: GroupInput) {
     setInput(next);
@@ -65,6 +68,10 @@ export function CommonGround() {
       const next = await request({ ...nextInput, mode: "qloo" });
       setPrevious(result || previous);
       setResult(next);
+      setStage("proposal");
+      document
+        .getElementById("workspace")
+        ?.scrollIntoView({ behavior: "smooth" });
       setVotes({});
     } catch (e) {
       setError(e instanceof Error ? e.message : "Planning failed");
@@ -82,7 +89,7 @@ export function CommonGround() {
     try {
       const q = await request({ ...input, mode: "qloo" });
       const b = await request({ ...input, mode: "baseline" });
-      if (!q.model || q.model !== b.model)
+      if (q.clarification || !q.model || q.model !== b.model)
         throw Error(
           "A complete same-model comparison is unavailable for this scenario.",
         );
@@ -137,7 +144,7 @@ export function CommonGround() {
             c/g<span className="cg-wordmark-dot">●</span>
           </span>{" "}
           Common Ground
-          <span>A little less scrolling. A little more agreement.</span>
+          <span>Find a film together.</span>
         </a>
         <a href="/">Common Bill archive ↗</a>
       </header>
@@ -147,20 +154,24 @@ export function CommonGround() {
             <i className="cg-live-dot" /> THE GROUP FILM-NIGHT NEGOTIATOR
           </span>
           <h1>
-            Good taste.
-            <br />
             Different tastes.
             <br />
-            <em>Common ground.</em>
+            <em>One movie night.</em>
           </h1>
           <p>
-            Find a film everyone can weigh in on.
-            <br />
-            Qloo finds the cultural connections. Your group makes the call.
+            A book you love. A film they adore. Find the connection—and a movie
+            night everyone gets a say in.
           </p>
-          <a className="cg-hero-cta" href="#people">
-            Take your seats <span>↘</span>
+          <a
+            className="cg-hero-cta"
+            href="#workspace"
+            onClick={() => setStage("people")}
+          >
+            Plan our film night <span>↗</span>
           </a>
+          <small className="cg-hero-note">
+            2–4 people · One shared screen · Powered by Qloo
+          </small>
           <div className="cg-hero-proof">
             INDIVIDUAL TASTES <b>→</b> SHARED POSSIBILITIES <b>→</b> EVERYONE’S
             SAY
@@ -221,28 +232,43 @@ export function CommonGround() {
           </div>
         </aside>
       </section>
-      <nav className="cg-chapters" aria-label="Planning chapters">
-        <a href="#people">
-          <b>01</b> Set the scene
-        </a>
-        <a href="#proposal">
-          <b>02</b> Find the overlap
-        </a>
-        <a href="#comparison">
-          <b>03</b> Challenge the result
-        </a>
-        <span>YOUR EVENING. YOUR CALL.</span>
-      </nav>
-      <div className="cg-disclosure">
-        Shared-device pilot · Pass the screen to each participant. Starting
-        favorites are examples—choose your own from the bounded catalog. No
-        accounts, bookings, streaming availability, or measured impact claims.
+      <div className="cg-marquee" aria-label="How it works">
+        <span>BOOKS INTO FILMS</span>
+        <b>✳</b>
+        <span>TASTE INTO CONNECTION</span>
+        <b>✳</b>
+        <span>A SAY FOR EVERYONE</span>
       </div>
-      <section id="people" className="cg-section">
+      <div id="workspace" className="cg-workspace-heading">
+        <span className="cg-kicker">YOUR PRIVATE LITTLE FILM CLUB</span>
+        <h2>Let’s make tonight happen.</h2>
+        <p>
+          Start with each person’s taste. The agent checks Qloo’s connections;
+          you decide together.
+        </p>
+      </div>
+      <nav className="cg-chapters" aria-label="Planning steps">
+        {(["people", "proposal", "comparison"] as const).map((s, i) => (
+          <button
+            key={s}
+            aria-current={stage === s ? "step" : undefined}
+            onClick={() => setStage(s)}
+          >
+            <b>0{i + 1}</b>
+            {["Your group", "Your film", "Test the difference"][i]}
+            {s === "proposal" && result ? " •" : ""}
+          </button>
+        ))}
+      </nav>
+      <p className="cg-disclosure">
+        Shared-device pilot · Six taste starters, four film candidates. Pass the
+        screen around. No account needed.
+      </p>
+      <section id="people" className="cg-section" hidden={stage !== "people"}>
         <div className="cg-section-title">
           <div>
             <span className="cg-kicker">01 / THE PEOPLE</span>
-            <h2>Every seat has a story.</h2>
+            <h2>Who’s watching?</h2>
           </div>
           <button
             disabled={busy || input.participants.length === 4}
@@ -260,7 +286,7 @@ export function CommonGround() {
               })
             }
           >
-            + Add a perspective
+            + Add a person
           </button>
         </div>
         <fieldset disabled={busy} className="cg-fieldset">
@@ -272,7 +298,7 @@ export function CommonGround() {
                 </div>
                 <h3>Participant {i + 1}</h3>
                 <label>
-                  A work I enjoy
+                  A book or film I love
                   <select
                     value={p.seed}
                     onChange={(e) =>
@@ -294,7 +320,9 @@ export function CommonGround() {
                   </select>
                 </label>
                 <details>
-                  <summary>My hard vetoes ({p.vetoes.length})</summary>
+                  <summary>
+                    Films I don’t want to watch ({p.vetoes.length})
+                  </summary>
                   {movies.map((m) => (
                     <label className="cg-check" key={m.id}>
                       <input
@@ -350,10 +378,8 @@ export function CommonGround() {
                   })
                 }
               >
-                <option value="balanced">
-                  Prioritize the least-supported person
-                </option>
-                <option value="average">Highest average ranking</option>
+                <option value="balanced">Give everyone’s taste a chance</option>
+                <option value="average">Best average match</option>
               </select>
             </label>
             <button
@@ -368,6 +394,27 @@ export function CommonGround() {
               Remove last participant
             </button>
           </div>
+          <label className="cg-uncertain">
+            Unsure which favorite to choose?
+            <select
+              value={input.uncertainParticipant || ""}
+              onChange={(e) =>
+                edit({
+                  ...input,
+                  uncertainParticipant: (e.target.value ||
+                    undefined) as GroupInput["uncertainParticipant"],
+                  clarificationRound: 0,
+                })
+              }
+            >
+              <option value="">Everyone is ready</option>
+              {input.participants.map((p, i) => (
+                <option key={p.id} value={p.id}>
+                  Participant {i + 1} is unsure
+                </option>
+              ))}
+            </select>
+          </label>
         </fieldset>
         {Boolean(input.passed?.length) && (
           <p className="cg-change">
@@ -382,7 +429,7 @@ export function CommonGround() {
         )}
         <div className="cg-action">
           <button className="cg-primary" disabled={busy} onClick={() => run()}>
-            {busy ? "Consulting the evidence…" : "Find our common ground →"}
+            {busy ? "Finding a film for your group…" : "Find a film for us →"}
           </button>
           <small>
             Real calls may take a minute. Evidence and identical proposals may
@@ -395,7 +442,12 @@ export function CommonGround() {
           </p>
         )}
       </section>
-      <section id="proposal" className="cg-section" aria-live="polite">
+      <section
+        id="proposal"
+        className="cg-section"
+        hidden={stage !== "proposal"}
+        aria-live="polite"
+      >
         <span className="cg-kicker">02 / THE PROPOSAL</span>
         {!result ? (
           <div className="cg-empty">
@@ -415,11 +467,9 @@ export function CommonGround() {
             <div className="cg-proposal">
               <div>
                 <span className="cg-kicker">
-                  {accepted
-                    ? "EVERYONE EXPLICITLY ACCEPTED"
-                    : "FOR YOUR CONSIDERATION"}
+                  {accepted ? "EVERYONE IS IN" : "YOUR GROUP’S SUGGESTION"}
                 </span>
-                <h2>{selected?.title || "No supported agreement yet"}</h2>
+                <h2>{selected?.title || "We haven’t found a match yet"}</h2>
                 {selected && (
                   <p>
                     {selected.year} · {selected.minutes} min ·{" "}
@@ -428,8 +478,8 @@ export function CommonGround() {
                 )}
                 <p>{result.rationale}</p>
                 <small>
-                  Policy explanation; inspect the Qloo ranks below. Cultural
-                  affinity is not a satisfaction forecast.
+                  Based on taste connections, not a promise you’ll like it.
+                  Everyone still gets a say.
                 </small>
               </div>
               <div className="cg-stamp">
@@ -437,7 +487,7 @@ export function CommonGround() {
                 <span>
                   {accepted
                     ? "by participant responses"
-                    : "no inferred consent"}
+                    : "everyone gets a say"}
                 </span>
               </div>
             </div>
@@ -464,9 +514,11 @@ export function CommonGround() {
                     >
                       <option value="">Not answered</option>
                       <option value="accept">I would watch this</option>
-                      <option value="compromise">Acceptable compromise</option>
+                      <option value="compromise">This works for me</option>
                       <option value="another">Suggest another</option>
-                      <option value="veto">Hard veto—exclude this film</option>
+                      <option value="veto">
+                        Don’t suggest this film again
+                      </option>
                     </select>
                   </label>
                 ))}
@@ -495,78 +547,154 @@ export function CommonGround() {
                 </button>
               </div>
             )}
-            <DecisionLab input={result.input} rows={result.rows} />
-            <div className="cg-table">
-              <table>
-                <caption>
-                  Within-profile rank positions converted to percentiles. These
-                  are ordinal comparisons, not comparable happiness scores.
-                  “Unknown” includes absent results and profiles with only one
-                  returned candidate.
-                </caption>
-                <thead>
-                  <tr>
-                    <th>Candidate</th>
-                    {input.participants.map((p) => (
-                      <th key={p.id}>{p.id.toUpperCase()}</th>
-                    ))}
-                    <th>Constraints</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {result.rows.map((r) => (
-                    <tr
-                      key={r.id}
-                      className={r.id === result.selected ? "cg-selected" : ""}
-                    >
-                      <th>
-                        {r.title}
-                        <small>{r.minutes} min</small>
-                      </th>
-                      {input.participants.map((p) => (
-                        <td key={p.id}>
-                          {r.ranks[p.id] === null
-                            ? "Unknown"
-                            : `${Math.round(r.ranks[p.id]! * 100)} / 100`}
-                        </td>
+            {result.clarification && (
+              <div className="cg-repair">
+                <h3>A quick question before we choose.</h3>
+                <p>{result.clarification.question}</p>
+                <label>
+                  Choose a different favorite
+                  <select
+                    defaultValue=""
+                    disabled={busy}
+                    onChange={(e) => {
+                      if (!e.target.value) return;
+                      const next = {
+                        ...input,
+                        uncertainParticipant: undefined,
+                        clarificationRound: Math.min(
+                          2,
+                          (input.clarificationRound || 0) + 1,
+                        ),
+                        participants: input.participants.map((p) =>
+                          p.id === result.clarification!.participantId
+                            ? { ...p, seed: e.target.value as typeof p.seed }
+                            : p,
+                        ),
+                      };
+                      edit(next);
+                      void run(next);
+                    }}
+                  >
+                    <option value="">
+                      Choose a different favorite to continue
+                    </option>
+                    {works
+                      .filter(
+                        (w) =>
+                          w.id !==
+                          input.participants.find(
+                            (p) => p.id === result.clarification!.participantId,
+                          )?.seed,
+                      )
+                      .map((w) => (
+                        <option key={w.id} value={w.id}>
+                          {w.title}
+                        </option>
                       ))}
-                      <td>{r.blocked.join(", ") || "Pass"}</td>
-                    </tr>
+                  </select>
+                </label>
+              </div>
+            )}
+            {result.trace && (
+              <details className="cg-details">
+                <summary>
+                  What the agent did · {result.agentCalls} model calls{" "}
+                  {result.cached ? "· reused run" : ""}
+                </summary>
+                <ol className="cg-agent-trace">
+                  {result.trace.map((t, i) => (
+                    <li key={i}>
+                      <strong>{t.action.replaceAll("_", " ")}</strong>
+                      <p>{t.detail}</p>
+                    </li>
                   ))}
-                </tbody>
-              </table>
-            </div>
-            <details className="cg-details">
+                </ol>
+                <small>
+                  Recorded actions, not a live stream. Evidence may be cached;
+                  original timestamps are in the receipts.
+                </small>
+              </details>
+            )}
+            <details className="cg-evidence">
               <summary>
-                Why this strategy? What does the evidence actually say?
+                Why this film?{" "}
+                <span>Qloo ranks · policy sensitivity · receipts</span>
               </summary>
-              <p>
-                The balanced strategy maximizes the lowest within-profile
-                percentile, then the mean. The average strategy maximizes the
-                mean. Alphabetical IDs break ties. These are transparent product
-                rules, not Qloo fairness guarantees. Every participant needs
-                comparative evidence for a Qloo proposal. We query a fixed
-                four-film universe so vetoes do not change the ranking
-                denominator.
-              </p>
-              <p>
-                Qloo returns associations for the selected favorite—not a
-                complete personal taste model. Identity matches use exact title
-                and year. Familiar films are not automatically excluded; veto
-                anything you do not want to watch.
-              </p>
-            </details>
-            <details className="cg-details">
-              <summary>
-                Inspect {Object.keys(result.receipts).length} participant query
-                receipts
-              </summary>
-              <p>
-                Proposal: {new Date(result.at).toLocaleString()} ·{" "}
-                {result.cached ? "Reused proposal" : "Generated proposal"}.
-                Individual evidence can be cached independently.
-              </p>
-              <pre>{JSON.stringify(result.receipts, null, 2)}</pre>
+              <DecisionLab input={result.input} rows={result.rows} />
+              <div className="cg-table">
+                <table>
+                  <caption>
+                    Within-profile rank positions converted to percentiles.
+                    These are ordinal comparisons, not comparable happiness
+                    scores. “Unknown” includes absent results and profiles with
+                    only one returned candidate.
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th>Candidate</th>
+                      {input.participants.map((p) => (
+                        <th key={p.id}>{p.id.toUpperCase()}</th>
+                      ))}
+                      <th>Constraints</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {result.rows.map((r) => (
+                      <tr
+                        key={r.id}
+                        className={
+                          r.id === result.selected ? "cg-selected" : ""
+                        }
+                      >
+                        <th>
+                          {r.title}
+                          <small>{r.minutes} min</small>
+                        </th>
+                        {input.participants.map((p) => (
+                          <td key={p.id}>
+                            {r.ranks[p.id] === null
+                              ? "Unknown"
+                              : `${Math.round(r.ranks[p.id]! * 100)} / 100`}
+                          </td>
+                        ))}
+                        <td>{r.blocked.join(", ") || "Pass"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <details className="cg-details">
+                <summary>
+                  Why this strategy? What does the evidence actually say?
+                </summary>
+                <p>
+                  The balanced strategy maximizes the lowest within-profile
+                  percentile, then the mean. The average strategy maximizes the
+                  mean. Alphabetical IDs break ties. These are transparent
+                  product rules, not Qloo fairness guarantees. Every participant
+                  needs comparative evidence for a Qloo proposal. We query a
+                  fixed four-film universe so vetoes do not change the ranking
+                  denominator.
+                </p>
+                <p>
+                  Qloo returns associations for the selected favorite—not a
+                  complete personal taste model. Identity matches use exact
+                  title and year. Familiar films are not automatically excluded;
+                  veto anything you do not want to watch.
+                </p>
+              </details>
+              <details className="cg-details">
+                <summary>
+                  Inspect {Object.keys(result.receipts).length} participant
+                  query receipts
+                </summary>
+                <p>
+                  Proposal: {new Date(result.at).toLocaleString()} ·{" "}
+                  {result.cached ? "Reused proposal" : "Generated proposal"}.
+                  Individual evidence can be cached independently.
+                </p>
+                <pre>{JSON.stringify(result.receipts, null, 2)}</pre>
+              </details>
             </details>
             <button
               onClick={() =>
@@ -586,21 +714,22 @@ export function CommonGround() {
                 )
               }
             >
-              Prepare decision record
+              Save our decision
             </button>
           </>
         )}
       </section>
-      <section className="cg-section">
+      <section className="cg-section" hidden={stage !== "comparison"}>
         <span id="comparison" className="cg-kicker">
           03 / PUT IT TO THE TEST
         </span>
         <h2>Don’t take our word for it.</h2>
         <p>
           Compare Qloo-assisted selection with the same model using only
-          favorite titles and constraints. Both arms make one LLM call. The Qloo
-          arm includes a deterministic ranking policy, so this tests the whole
-          workflow—not Qloo’s isolated causal effect.
+          favorite titles and constraints. The agent may use multiple model
+          calls; the baseline uses one. The Qloo arm also includes a ranking
+          policy, so this tests the whole workflow—not Qloo’s isolated causal
+          effect.
         </p>
         <button disabled={busy} onClick={compare}>
           Run a blind comparison
@@ -720,6 +849,8 @@ export function CommonGround() {
         </section>
       )}
       <footer>
+        <a href="/">Explore the original Common Bill project ↗</a>
+        <br />
         COMMON GROUND · Built with Qloo + Groq · A working pilot, not a promise
         of perfect agreement.
         <br />
