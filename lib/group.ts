@@ -63,6 +63,8 @@ export const groupSchema = z
       )
       .min(2)
       .max(4),
+    uncertainParticipant: z.enum(["p1", "p2", "p3", "p4"]).optional(),
+    clarificationRound: z.number().int().min(0).max(2).optional(),
     passed: z
       .array(z.enum(["paterson", "columbus", "arrival", "paddington"]))
       .max(4)
@@ -97,6 +99,9 @@ export type GroupResult = {
   rationale: string;
   model: string | null;
   cached?: boolean;
+  trace?: Array<{ action: string; at: string; detail: string }>;
+  clarification?: { participantId: string; question: string };
+  agentCalls?: number;
 };
 export function rankGroup(
   input: GroupInput,

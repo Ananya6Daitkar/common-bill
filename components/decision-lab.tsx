@@ -20,7 +20,7 @@ export function DecisionLab({
       <h3>
         {blocked
           ? "What would need to change?"
-          : "Whose taste changes the choice?"}
+          : "Whose taste changes the policy choice?"}
       </h3>
       {blocked ? (
         <>
